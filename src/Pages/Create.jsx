@@ -1,8 +1,11 @@
 import Container from "../components/Container";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 export default function Create() {
+  const navigate = useNavigate();
   const [note, setNote] = useState({ title: "", note: "" });
+  const [loading, setLoading] = useState(false);
   const createNote = () => {
     return {
       ...note,
@@ -13,7 +16,11 @@ export default function Create() {
   const submitNote = async (e) => {
     e.preventDefault();
     const note = createNote();
+    if (note.title.length < 1 || note.note.length < 1) {
+      return alert("cant submit empty value");
+    }
 
+    setLoading(true);
     const req = await fetch("http://localhost:5000/notes", {
       method: "POST",
       headers: {
@@ -24,8 +31,11 @@ export default function Create() {
 
     const res = await req.json();
 
-    console.log(res);
     setNote({ title: "", note: "" });
+    setTimeout(() => {
+      setLoading(false);
+      navigate("/");
+    }, 1000);
   };
   return (
     <section className="py-5">
@@ -54,8 +64,11 @@ export default function Create() {
             className="w-full bg-black/80 p-2 rounded outline-none text-white"
           ></textarea>
           <button
+            disabled={loading}
             type="submit"
-            className=" bg-black py-2 px-8 text-white rounded"
+            className={`bg-black py-2 px-8 text-white rounded  ${
+              loading ? "bg-black/50" : ""
+            }`}
           >
             Submit Note
           </button>

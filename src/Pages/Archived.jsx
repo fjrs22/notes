@@ -1,20 +1,10 @@
 import Container from "../components/Container";
-import { useState, useEffect } from "react";
 import Note from "../components/Note";
+import useFetch from "../utils/useFetch";
 export default function Archived() {
-  const [archive, setArchive] = useState([]);
-  const [loading, setLoading] = useState(true);
-  useEffect(() => {
-    async function getArchive() {
-      const req = await fetch("http://localhost:5000/notes?isArchived=true");
-      const res = await req.json();
-      setArchive(res);
-      setLoading(false);
-    }
-    setTimeout(() => {
-      getArchive();
-    }, 1000);
-  }, []);
+  const { notes: archive, loading } = useFetch(
+    "http://localhost:5000/notes?isArchived=true"
+  );
   return (
     <section className="py-5">
       <Container>
